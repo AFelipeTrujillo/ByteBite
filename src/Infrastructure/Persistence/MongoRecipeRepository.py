@@ -1,6 +1,6 @@
 from typing import List
 from uuid import UUID
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 from src.Domain.Entity.Recipe import Recipe, RecipeIngredient
 from src.Domain.Repository.RecipeRepository import RecipeRepository
@@ -10,7 +10,7 @@ from src.Domain.ValueObject.Unit import Unit
 
 class MongoRecipeRepository(RecipeRepository):
 
-    def __init__(self, collection: AsyncIOMotorClient):
+    def __init__(self, collection: AsyncIOMotorCollection):
         self.collection = collection
 
     async def get_by_ids(self, ids: List[UUID]) -> List[Recipe]:
