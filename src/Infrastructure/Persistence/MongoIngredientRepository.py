@@ -4,6 +4,8 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 
 from src.Domain.Entity.Ingredient import Ingredient
 from src.Domain.Repository.IngredientRepository import IngredientRepository
+from src.Domain.ValueObject.Category import Category
+
 
 class MongoIngredientRepository(IngredientRepository):
 
@@ -41,5 +43,5 @@ class MongoIngredientRepository(IngredientRepository):
         return Ingredient(
             id          =UUID(doc["_id"]),
             name        =doc["name"],
-            category    =doc["category"]
+            category    =Category(doc["category"])
         )
