@@ -1,4 +1,4 @@
-name: Python Tests on Tag
+name: ByteBite Tests on Tag
 
 on:
   push:
