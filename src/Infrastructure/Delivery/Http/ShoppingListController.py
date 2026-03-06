@@ -1,18 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
-from uuid import UUID
+from fastapi import APIRouter, Depends
+from typing import List
+from uuid import  UUID
 
+from src.Infrastructure.Delivery.Http.Schemas.ShoppingListSchema import ShoppingListItemResponse
 from src.Application.UseCase.GenerateShoppingList import GenerateShoppingList
 
 router = APIRouter()
 
-@router.get("/shopping-list/{meal_plan_id}")
-async def generate_list(
-    meal_plan_id: UUID,
-    use_case: GenerateShoppingList = Depends()
-):
-    try:
-        return await use_case.execute(meal_plan_id=meal_plan_id)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+@router.get("/shopping-list/{meal_plan_id}", response_model=List[ShoppingListItemResponse])
+async def generate_list(meal_plan_id: UUID, use_case: GenerateShoppingList = Depends()):
 
+    items_dto = await use_case.execute(meal_plan_id)
 
+    return items_dto

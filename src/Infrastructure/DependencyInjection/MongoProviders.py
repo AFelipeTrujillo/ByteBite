@@ -1,9 +1,11 @@
-
+from src.Application.UseCase.LoginUseCase import LoginUseCase
+from src.Domain.Repository.MongoUserRepository import MongoUserRepository
 from src.Infrastructure.Persistence.MongoClient import MongoClient
 from src.Infrastructure.Persistence.MongoRecipeRepository import MongoRecipeRepository
 from src.Infrastructure.Persistence.MongoMealPlanRepository import MongoMealPlanRepository
 from src.Infrastructure.Persistence.MongoIngredientRepository import MongoIngredientRepository
 from src.Application.UseCase.GenerateShoppingList import GenerateShoppingList
+from src.Infrastructure.Security.JwtAuthService import JwtAuthService
 
 db_client = MongoClient()
 
@@ -16,3 +18,10 @@ def get_generate_shopping_list_use_case() -> GenerateShoppingList:
 
 
     return GenerateShoppingList(meal_plan_repo, recipe_repo, ingredient_repo)
+
+
+def get_login_use_case() -> LoginUseCase:
+    user_repo = MongoUserRepository(db_client.get_collection("users"))
+    auth_service = JwtAuthService()
+
+    return LoginUseCase(user_repo, auth_service)
