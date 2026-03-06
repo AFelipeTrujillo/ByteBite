@@ -5,7 +5,7 @@ from src.Domain.ValueObject.IngredientQuantity import IngredientQuantity
 from src.Domain.Repository.RecipeRepository import RecipeRepository
 from src.Domain.Repository.MealPlanRepository import MealPlanRepository
 from src.Domain.Repository.IngredientRepository import IngredientRepository
-from src.Application.DTO.ShoppingListItem import ShoppingListItem
+from src.Application.DTO.ShoppingListItem import ShoppingListItemDTO
 
 
 
@@ -21,7 +21,7 @@ class GenerateShoppingList:
         self.recipe_repo = recipe_repo
         self.ingredient_repo = ingredient_repo
 
-    async def execute(self, meal_plan_id: UUID) -> List[ShoppingListItem]:
+    async def execute(self, meal_plan_id: UUID) -> List[ShoppingListItemDTO]:
         meal_plan = await self.meal_plan_repo.get_by_id(meal_plan_id)
         if not meal_plan:
             raise ValueError("Meal Plan not found")
@@ -43,11 +43,11 @@ class GenerateShoppingList:
                 else:
                     totals[item.ingredient_id] = item.quantity
 
-        response: List[ShoppingListItem] = []
+        response: List[ShoppingListItemDTO] = []
         for ing_id, quantity in totals.items():
             name = await self.ingredient_repo.get_name_by_id(ing_id)
             response.append(
-                ShoppingListItem(
+                ShoppingListItemDTO(
                     ingredient_id=ing_id,
                     ingredient_name=name,
                     amount=quantity.amount,

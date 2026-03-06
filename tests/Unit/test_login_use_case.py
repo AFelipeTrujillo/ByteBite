@@ -1,6 +1,8 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
+
+from src.Application.DTO.Token import TokenDTO
 from src.Application.UseCase.LoginUseCase import LoginUseCase
 from src.Domain.Entity.User import User
 
@@ -35,7 +37,8 @@ async def test_login_success():
     token = await use_case.execute(email, password)
 
     # Assert
-    assert token == "fake_jwt_token"
+    expected_token = TokenDTO(access_token="fake_jwt_token", token_type="bearer")
+    assert token == expected_token
     mock_repo.find_by_email.assert_called_once_with(email)
     mock_auth.verify_password.assert_called_once_with(password, hashed_password)
     mock_auth.create_access_token.assert_called_once()
