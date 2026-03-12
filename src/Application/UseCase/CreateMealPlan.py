@@ -17,8 +17,8 @@ class CreateMealPlan:
         days_dict = {}
         for day_index, plan_info in days_data.items():
             days_dict[int(day_index)] = DailyPlan(
-                lunch_recipe_id=plan_info.get("lunch_recipe_id"),
-                dinner_recipe_id=plan_info.get("dinner_recipe_id")
+                lunch_recipe_id=plan_info.lunch_recipe_id,
+                dinner_recipe_id=plan_info.dinner_recipe_id
             )
 
         meal_plan = MealPlan(
