@@ -6,6 +6,7 @@ from src.Infrastructure.Persistence.MongoClient import MongoClient
 from src.Infrastructure.DependencyInjection.MongoProviders import get_generate_shopping_list_use_case
 from src.Infrastructure.Delivery.Http.ShoppingListController import router as shopping_list_router
 from src.Infrastructure.Delivery.Http.AuthController import router as auth_router
+from src.Infrastructure.Delivery.Http.MealPlanController import router as meal_plan_router
 
 app = FastAPI(
     title       =   settings.APP_NAME,
@@ -19,6 +20,7 @@ app.dependency_overrides[GenerateShoppingList] = get_generate_shopping_list_use_
 
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(shopping_list_router, prefix = "/api/v1", tags=["Shopping List"])
+app.include_router(meal_plan_router, prefix="/api/v1", tags=["Meal Planning"])
 
 @app.get("/health")
 async def health_check():

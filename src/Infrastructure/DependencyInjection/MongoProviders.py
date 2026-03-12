@@ -1,3 +1,6 @@
+from fastapi.params import Depends
+
+from src.Application.UseCase.CreateMealPlan import CreateMealPlan
 from src.Application.UseCase.LoginUseCase import LoginUseCase
 from src.Domain.Repository.MongoUserRepository import MongoUserRepository
 from src.Infrastructure.Persistence.MongoClient import MongoClient
@@ -25,3 +28,11 @@ def get_login_use_case() -> LoginUseCase:
     auth_service = JwtAuthService()
 
     return LoginUseCase(user_repo, auth_service)
+
+def get_meal_plan_repository() -> MongoMealPlanRepository:
+    return MongoMealPlanRepository(db_client.db["meal_plans"])
+
+def get_create_meal_plan_use_case(
+    repo: MongoMealPlanRepository = Depends(get_meal_plan_repository)
+) -> CreateMealPlan:
+    return CreateMealPlan(repo)

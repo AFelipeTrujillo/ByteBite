@@ -12,6 +12,8 @@ class Settings:
         self.APP_VERSION = self._get_env("APP_VERSION", "v1.0.0")
         self.MONGO_URI = self._get_env("MONGO_URI", "mongodb://localhost:27017/")
         self.MONGO_DB_NAME = self._get_env("MONGO_DB_NAME", "bytebite_db")
+        self.JWT_SECRET: str = "tu_clave_secreta_super_segura"
+        self.JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
 
     def _get_env(self, key: str, default: str = None) -> str:
         value = os.getenv(key=key, default=default)
