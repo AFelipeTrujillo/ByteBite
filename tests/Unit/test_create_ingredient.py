@@ -14,4 +14,4 @@ async def test_create_ingredient():
     )
 
     assert ingredient1.name == "Apple"
-    assert ingredient1.category == "Fruits"
+    assert ingredient1.category == 106
