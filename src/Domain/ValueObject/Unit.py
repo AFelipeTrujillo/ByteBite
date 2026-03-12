@@ -1,9 +1,10 @@
 from enum import Enum
 
 class Unit(Enum):
-    GRAMS = "g"
-    KILOGRAMS = "kg"
-    MILLILITERS = "ml"
-    LITERS = "l"
-    UNITS = "un"
-    SPOON = "spoon"
+    GRAMS       = 101
+    KILOGRAMS   = 102
+    MILLILITERS = 103
+    LITERS      = 104
+    UNITS       = 105
+    SPOON       = 106
+    CLOVE       = 107
