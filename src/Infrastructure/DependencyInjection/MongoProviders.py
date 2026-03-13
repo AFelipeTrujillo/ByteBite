@@ -9,6 +9,7 @@ from src.Infrastructure.Persistence.MongoMealPlanRepository import MongoMealPlan
 from src.Infrastructure.Persistence.MongoIngredientRepository import MongoIngredientRepository
 from src.Application.UseCase.GenerateShoppingList import GenerateShoppingList
 from src.Infrastructure.Security.JwtAuthService import JwtAuthService
+from src.Application.UseCase.GetRecipesUseCase import GetRecipesUseCase
 
 db_client = MongoClient()
 
@@ -36,3 +37,7 @@ def get_create_meal_plan_use_case(
     repo: MongoMealPlanRepository = Depends(get_meal_plan_repository)
 ) -> CreateMealPlan:
     return CreateMealPlan(repo)
+
+def get_get_recipes_use_case():
+    repository = MongoRecipeRepository(db_client.get_collection("recipes"))
+    return GetRecipesUseCase(repository)

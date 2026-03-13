@@ -5,6 +5,7 @@ from src.Application.Service.AuthService import AuthService
 from src.Infrastructure.Configs.Settings import settings
 
 class JwtAuthService(AuthService):
+
     def __init__(self):
         self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
         self.secret_key = settings.JWT_SECRET
@@ -21,3 +22,10 @@ class JwtAuthService(AuthService):
         expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=15))
         to_encode.update({"exp": expire})
         return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
+
+    def get_user_id_from_token(self, token: str) -> str:
+        try:
+            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+            return payload.get("sub")
+        except jwt.PyJWTError:
+            return None

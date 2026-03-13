@@ -10,3 +10,7 @@ class RecipeRepository(ABC):
     @abstractmethod
     async def get_by_ids(self, ids: List[UUID]) -> List[Recipe]:
         pass
+
+    @abstractmethod
+    async def find_by_owner(self, owner_id: UUID) -> List[Recipe]:
+        pass

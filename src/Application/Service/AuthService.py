@@ -14,3 +14,7 @@ class AuthService(ABC):
     @abstractmethod
     def create_access_token(self, data: Dict, expires_delta: timedelta = None) -> str:
         pass
+
+    @abstractmethod
+    def get_user_id_from_token(self, token: str) -> str:
+        pass

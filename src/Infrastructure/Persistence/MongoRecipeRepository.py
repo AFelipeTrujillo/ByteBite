@@ -24,6 +24,15 @@ class MongoRecipeRepository(RecipeRepository):
 
         return recipes
 
+    async def find_by_owner(self, owner_id: UUID) -> List[Recipe]:
+        cursor = self.collection.find({"owner_id": str(owner_id)})
+        recipes = []
+
+        async for doc in cursor:
+            recipes.append(self._map_to_entity(doc))
+
+        return recipes
+
     def _map_to_entity(self, doc: dict) -> Recipe:
 
         return Recipe(
@@ -34,7 +43,7 @@ class MongoRecipeRepository(RecipeRepository):
                 RecipeIngredient(
                     ingredient_id=UUID(item["ingredient_id"]),
                     quantity=IngredientQuantity(
-                        amount=item["quantity"]["amount"],
+                        amount=item["quantity"]["value"],
                         unit=Unit(item["quantity"]["unit"])
                     )
                 ) for item in doc["ingredients"]
