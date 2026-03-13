@@ -9,7 +9,7 @@ class Settings:
 
         self.APP_NAME           = self._get_env("APP_NAME", "ByteBite API")
         self.APP_DESCRIPTION    = self._get_env("APP_DESCRIPTION", "Recipe Management and Weekly Shopping List Generator")
-        self.APP_VERSION        = self._get_env("APP_VERSION", "v1.0.2")
+        self.APP_VERSION        = self._get_env("APP_VERSION", "v1.0.3")
         self.MONGO_URI          = self._get_env("MONGO_URI", "mongodb://localhost:27017/")
         self.MONGO_DB_NAME      = self._get_env("MONGO_DB_NAME", "bytebite_db")
         self.FRONT_END_URL      = self._get_env("FRONT_END_URL", "http://localhost:3000")
