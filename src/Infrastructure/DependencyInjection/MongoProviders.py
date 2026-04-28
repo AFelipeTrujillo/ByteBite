@@ -3,6 +3,10 @@ from fastapi.params import Depends
 from src.Application.UseCase.CreateMealPlan import CreateMealPlan
 from src.Application.UseCase.LoginUseCase import LoginUseCase
 from src.Application.UseCase.RegisterUseCase import RegisterUseCase
+from src.Application.UseCase.CreateRecipeUseCase import CreateRecipeUseCase
+from src.Application.UseCase.GetRecipeByIdUseCase import GetRecipeByIdUseCase
+from src.Application.UseCase.UpdateRecipeUseCase import UpdateRecipeUseCase
+from src.Application.UseCase.DeleteRecipeUseCase import DeleteRecipeUseCase
 from src.Domain.Repository.MongoUserRepository import MongoUserRepository
 from src.Infrastructure.Persistence.MongoClient import MongoClient
 from src.Infrastructure.Persistence.MongoRecipeRepository import MongoRecipeRepository
@@ -50,3 +54,26 @@ def get_create_meal_plan_use_case(
 def get_get_recipes_use_case():
     repository = MongoRecipeRepository(db_client.get_collection("recipes"))
     return GetRecipesUseCase(repository)
+
+def get_recipe_repository() -> MongoRecipeRepository:
+    return MongoRecipeRepository(db_client.get_collection("recipes"))
+
+def get_create_recipe_use_case(
+    repo: MongoRecipeRepository = Depends(get_recipe_repository)
+) -> CreateRecipeUseCase:
+    return CreateRecipeUseCase(repo)
+
+def get_get_recipe_by_id_use_case(
+    repo: MongoRecipeRepository = Depends(get_recipe_repository)
+) -> GetRecipeByIdUseCase:
+    return GetRecipeByIdUseCase(repo)
+
+def get_update_recipe_use_case(
+    repo: MongoRecipeRepository = Depends(get_recipe_repository)
+) -> UpdateRecipeUseCase:
+    return UpdateRecipeUseCase(repo)
+
+def get_delete_recipe_use_case(
+    repo: MongoRecipeRepository = Depends(get_recipe_repository)
+) -> DeleteRecipeUseCase:
+    return DeleteRecipeUseCase(repo)

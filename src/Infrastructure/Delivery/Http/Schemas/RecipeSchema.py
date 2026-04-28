@@ -1,6 +1,7 @@
 from pydantic import BaseModel, field_validator, ConfigDict
 from uuid import UUID
-from typing import List
+from typing import List, Optional
+
 
 class IngredientQuantitySchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -13,13 +14,15 @@ class IngredientQuantitySchema(BaseModel):
     def serialize_unit(cls, v):
         if hasattr(v, 'name'):
             return v.name
-        return v
+        return v.upper() if isinstance(v, str) else v
+
 
 class RecipeIngredientSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     ingredient_id: UUID
     quantity: IngredientQuantitySchema
+
 
 class RecipeResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -29,3 +32,30 @@ class RecipeResponse(BaseModel):
     name: str
     ingredients: List[RecipeIngredientSchema]
     references: List[str]
+
+
+class IngredientQuantityRequest(BaseModel):
+    amount: float
+    unit: str
+
+    @field_validator('unit')
+    @classmethod
+    def validate_unit(cls, v: str) -> str:
+        return v.upper()
+
+
+class RecipeIngredientRequest(BaseModel):
+    ingredient_id: UUID
+    quantity: IngredientQuantityRequest
+
+
+class CreateRecipeRequest(BaseModel):
+    name: str
+    ingredients: List[RecipeIngredientRequest]
+    references: List[str] = []
+
+
+class UpdateRecipeRequest(BaseModel):
+    name: Optional[str] = None
+    ingredients: Optional[List[RecipeIngredientRequest]] = None
+    references: Optional[List[str]] = None

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from motor.motor_asyncio import AsyncIOMotorCollection
 
@@ -33,6 +33,26 @@ class MongoRecipeRepository(RecipeRepository):
 
         return recipes
 
+    async def get_by_id(self, recipe_id: UUID) -> Optional[Recipe]:
+        doc = await self.collection.find_one({"_id": str(recipe_id)})
+        if not doc:
+            return None
+        return self._map_to_entity(doc)
+
+    async def save(self, recipe: Recipe) -> None:
+        document = self._map_to_document(recipe)
+        await self.collection.insert_one(document)
+
+    async def update(self, recipe: Recipe) -> None:
+        document = self._map_to_document(recipe)
+        await self.collection.replace_one(
+            {"_id": document["_id"]},
+            document
+        )
+
+    async def delete(self, recipe_id: UUID) -> None:
+        await self.collection.delete_one({"_id": str(recipe_id)})
+
     def _map_to_entity(self, doc: dict) -> Recipe:
 
         return Recipe(
@@ -50,3 +70,20 @@ class MongoRecipeRepository(RecipeRepository):
             ],
             references  = doc.get("references", [])
         )
+
+    def _map_to_document(self, recipe: Recipe) -> dict:
+        return {
+            "_id": str(recipe.id),
+            "owner_id": str(recipe.owner_id),
+            "name": recipe.name,
+            "ingredients": [
+                {
+                    "ingredient_id": str(item.ingredient_id),
+                    "quantity": {
+                        "value": item.quantity.amount,
+                        "unit": item.quantity.unit.value
+                    }
+                } for item in recipe.ingredients
+            ],
+            "references": recipe.references
+        }
