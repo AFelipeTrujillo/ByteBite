@@ -7,3 +7,4 @@ venv/
 .coverage
 .idea/
 build/
+*.egg-info/
