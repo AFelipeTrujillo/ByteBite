@@ -1,3 +1,5 @@
+[![ByteBite Tests on Tag](https://github.com/AFelipeTrujillo/ByteBite/actions/workflows/bytebite-test.yml/badge.svg)](https://github.com/AFelipeTrujillo/ByteBite/actions/workflows/bytebite-test.yml)
+
 # ByteBite
 **A Personal Recipe Manager and Smart Shopping List Generator.**
 
