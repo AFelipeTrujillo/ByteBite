@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID
 from motor.motor_asyncio import AsyncIOMotorCollection
-from src.Domain.Entity.User import User
+from src.Domain.Entity.User import User, UserRole
 from src.Domain.Repository.UserRepository import UserRepository
 
 class MongoUserRepository(UserRepository):
@@ -34,7 +34,8 @@ class MongoUserRepository(UserRepository):
             email=document["email"],
             hashed_password=document["hashed_password"],
             full_name=document.get("full_name"),
-            is_active=document.get("is_active", True)
+            is_active=document.get("is_active", True),
+            role=UserRole(document.get("role", UserRole.USER.value))
         )
 
     def _map_to_document(self, user: User) -> dict:
@@ -43,5 +44,6 @@ class MongoUserRepository(UserRepository):
             "email": user.email,
             "hashed_password": user.hashed_password,
             "full_name": user.full_name,
-            "is_active": user.is_active
+            "is_active": user.is_active,
+            "role": user.role.value
         }

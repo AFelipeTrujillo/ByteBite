@@ -12,8 +12,9 @@ def get_auth_service() -> JwtAuthService:
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     auth_service = get_auth_service()
-    user_id = auth_service.get_user_id_from_token(token)
+    payload = auth_service.decode_token(token)
 
+    user_id = payload.get("sub")
     if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -21,4 +22,16 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    return type('User', (), {'id': UUID(user_id)})
+    return type('User', (), {
+        'id': UUID(user_id),
+        'role': payload.get("role", "user")
+    })
+
+
+async def get_current_admin(current_user=Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin privileges required",
+        )
+    return current_user

@@ -23,6 +23,12 @@ class JwtAuthService(AuthService):
         to_encode.update({"exp": expire})
         return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
 
+    def decode_token(self, token: str) -> dict:
+        try:
+            return jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+        except jwt.PyJWTError:
+            return {}
+
     def get_user_id_from_token(self, token: str) -> str:
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])

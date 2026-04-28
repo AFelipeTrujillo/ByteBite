@@ -24,7 +24,8 @@ class LoginUseCase:
         # 3. Create Access Token (using user ID and email as payload)
         token_data = {
             "sub": str(user.id),
-            "email": user.email
+            "email": user.email,
+            "role": user.role.value
         }
 
         token_string = self.auth_service.create_access_token(token_data)

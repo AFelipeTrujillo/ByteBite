@@ -9,6 +9,7 @@ from src.Infrastructure.Delivery.Http.ShoppingListController import router as sh
 from src.Infrastructure.Delivery.Http.AuthController import router as auth_router
 from src.Infrastructure.Delivery.Http.MealPlanController import router as meal_plan_router
 from src.Infrastructure.Delivery.Http.RecipeController import router as recipe_router
+from src.Infrastructure.Delivery.Http.IngredientController import router as ingredient_router
 
 app = FastAPI(
     title       =   settings.APP_NAME,
@@ -36,6 +37,7 @@ app.include_router(auth_router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(shopping_list_router, prefix = "/api/v1", tags=["Shopping List"])
 app.include_router(meal_plan_router, prefix="/api/v1", tags=["Meal Planning"])
 app.include_router(recipe_router, prefix="/api/v1", tags=["Recipes"])
+app.include_router(ingredient_router, prefix="/api/v1", tags=["Ingredients"])
 
 @app.get("/health")
 async def health_check():

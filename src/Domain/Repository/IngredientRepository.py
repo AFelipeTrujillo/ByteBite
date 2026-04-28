@@ -18,3 +18,19 @@ class IngredientRepository(ABC):
     @abstractmethod
     async def list_all(self) -> List[Ingredient]:
         pass
+
+    @abstractmethod
+    async def find_by_name(self, name: str) -> Optional[Ingredient]:
+        pass
+
+    @abstractmethod
+    async def save(self, ingredient: Ingredient) -> None:
+        pass
+
+    @abstractmethod
+    async def update(self, ingredient: Ingredient) -> None:
+        pass
+
+    @abstractmethod
+    async def delete(self, ingredient_id: UUID) -> None:
+        pass

@@ -3,6 +3,7 @@ import os
 from uuid import uuid4
 from src.Infrastructure.Persistence.MongoClient import MongoClient
 from src.Infrastructure.Security.JwtAuthService import JwtAuthService
+from src.Domain.Entity.User import UserRole
 
 
 async def create_admin():
@@ -26,7 +27,8 @@ async def create_admin():
             "email": email,
             "hashed_password": hashed,
             "full_name": "ByteBite Admin",
-            "is_active": True
+            "is_active": True,
+            "role": UserRole.ADMIN.value
         }
 
 

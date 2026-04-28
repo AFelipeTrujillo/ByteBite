@@ -7,6 +7,11 @@ from src.Application.UseCase.CreateRecipeUseCase import CreateRecipeUseCase
 from src.Application.UseCase.GetRecipeByIdUseCase import GetRecipeByIdUseCase
 from src.Application.UseCase.UpdateRecipeUseCase import UpdateRecipeUseCase
 from src.Application.UseCase.DeleteRecipeUseCase import DeleteRecipeUseCase
+from src.Application.UseCase.ListIngredientsUseCase import ListIngredientsUseCase
+from src.Application.UseCase.GetIngredientByIdUseCase import GetIngredientByIdUseCase
+from src.Application.UseCase.CreateIngredientUseCase import CreateIngredientUseCase
+from src.Application.UseCase.UpdateIngredientUseCase import UpdateIngredientUseCase
+from src.Application.UseCase.DeleteIngredientUseCase import DeleteIngredientUseCase
 from src.Domain.Repository.MongoUserRepository import MongoUserRepository
 from src.Infrastructure.Persistence.MongoClient import MongoClient
 from src.Infrastructure.Persistence.MongoRecipeRepository import MongoRecipeRepository
@@ -77,3 +82,33 @@ def get_delete_recipe_use_case(
     repo: MongoRecipeRepository = Depends(get_recipe_repository)
 ) -> DeleteRecipeUseCase:
     return DeleteRecipeUseCase(repo)
+
+# --- Ingredient Providers ---
+
+def get_ingredient_repository() -> MongoIngredientRepository:
+    return MongoIngredientRepository(db_client.get_collection("ingredients"))
+
+def get_list_ingredients_use_case(
+    repo: MongoIngredientRepository = Depends(get_ingredient_repository)
+) -> ListIngredientsUseCase:
+    return ListIngredientsUseCase(repo)
+
+def get_ingredient_by_id_use_case(
+    repo: MongoIngredientRepository = Depends(get_ingredient_repository)
+) -> GetIngredientByIdUseCase:
+    return GetIngredientByIdUseCase(repo)
+
+def get_create_ingredient_use_case(
+    repo: MongoIngredientRepository = Depends(get_ingredient_repository)
+) -> CreateIngredientUseCase:
+    return CreateIngredientUseCase(repo)
+
+def get_update_ingredient_use_case(
+    repo: MongoIngredientRepository = Depends(get_ingredient_repository)
+) -> UpdateIngredientUseCase:
+    return UpdateIngredientUseCase(repo)
+
+def get_delete_ingredient_use_case(
+    repo: MongoIngredientRepository = Depends(get_ingredient_repository)
+) -> DeleteIngredientUseCase:
+    return DeleteIngredientUseCase(repo)
