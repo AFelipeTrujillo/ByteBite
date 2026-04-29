@@ -2,6 +2,7 @@ from fastapi.params import Depends
 
 from src.Application.UseCase.CreateMealPlan import CreateMealPlan
 from src.Application.UseCase.ListMealPlansUseCase import ListMealPlansUseCase
+from src.Application.UseCase.GetMealPlanByIdUseCase import GetMealPlanByIdUseCase
 from src.Application.UseCase.LoginUseCase import LoginUseCase
 from src.Application.UseCase.RegisterUseCase import RegisterUseCase
 from src.Application.UseCase.CreateRecipeUseCase import CreateRecipeUseCase
@@ -62,6 +63,11 @@ def get_list_meal_plans_use_case(
 ) -> ListMealPlansUseCase:
     return ListMealPlansUseCase(repo)
 
+def get_meal_plan_by_id_use_case(
+    repo: MongoMealPlanRepository = Depends(get_meal_plan_repository)
+) -> GetMealPlanByIdUseCase:
+    return GetMealPlanByIdUseCase(repo)
+
 def get_get_recipes_use_case():
     repository = MongoRecipeRepository(db_client.get_collection("recipes"))
     return GetRecipesUseCase(repository)
@@ -118,3 +124,4 @@ def get_delete_ingredient_use_case(
     repo: MongoIngredientRepository = Depends(get_ingredient_repository)
 ) -> DeleteIngredientUseCase:
     return DeleteIngredientUseCase(repo)
+
