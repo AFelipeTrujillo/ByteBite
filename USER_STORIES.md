@@ -112,15 +112,18 @@
     {
       "category": "Vegetables & Greens",
       "items": [
-        { "ingredient_id": "uuid", "ingredient_name": "Garlic", "amount": 2, "unit": "CLOVE" },
-        { "ingredient_id": "uuid", "ingredient_name": "Tomato", "amount": 4, "unit": "UNITS" }
+        { "ingredient_id": "uuid", "ingredient_name": "Garlic", "amount": 2, "unit": "CLOVE", "checked": false },
+        { "ingredient_id": "uuid", "ingredient_name": "Tomato", "amount": 4, "unit": "UNITS", "checked": false }
       ]
     }
   ]
 }
 ```
 
-- The endpoint remains authenticated (fix current missing auth).
+- Each item includes a `checked` field (always `false` initially) so that the frontend can implement interactive check-off functionality in the future.
+- The endpoint requires authentication and only the owner of the meal plan can access it.
+- If the meal plan does not exist, return `404 Not Found`.
+- If the user is not the owner, return `403 Forbidden`.
 - Existing functionality (consolidating same ingredients across recipes) is preserved.
 
 ---
@@ -129,4 +132,5 @@
 
 - Sharing recipes with other users (`invited_users` feature).
 - Ingredient exclusion (mark ingredients you already have at home).
+- Interactive shopping list: mark items as checked/unchecked (`PATCH /api/v1/shopping-list/{meal_plan_id}/items/{ingredient_id}`).
 - Recipe search/filtering by name or ingredient.
