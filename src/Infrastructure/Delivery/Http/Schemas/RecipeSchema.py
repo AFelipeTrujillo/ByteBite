@@ -21,6 +21,7 @@ class RecipeIngredientSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     ingredient_id: UUID
+    ingredient_name: str = ""
     quantity: IngredientQuantitySchema
 
 
@@ -59,3 +60,4 @@ class UpdateRecipeRequest(BaseModel):
     name: Optional[str] = None
     ingredients: Optional[List[RecipeIngredientRequest]] = None
     references: Optional[List[str]] = None
+

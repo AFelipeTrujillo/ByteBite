@@ -4,11 +4,13 @@ from src.Domain.Entity.Recipe import Recipe, RecipeIngredient
 from src.Domain.ValueObject.IngredientQuantity import IngredientQuantity
 from src.Domain.ValueObject.Unit import Unit
 from src.Domain.Repository.RecipeRepository import RecipeRepository
+from src.Domain.Repository.IngredientRepository import IngredientRepository
 
 
 class UpdateRecipeUseCase:
-    def __init__(self, recipe_repo: RecipeRepository):
+    def __init__(self, recipe_repo: RecipeRepository, ingredient_repo: IngredientRepository):
         self.recipe_repo = recipe_repo
+        self.ingredient_repo = ingredient_repo
 
     async def execute(
         self,
@@ -45,4 +47,10 @@ class UpdateRecipeUseCase:
             recipe.references = references
 
         await self.recipe_repo.update(recipe)
+
+        # Resolve ingredient names before returning
+        for ing in recipe.ingredients:
+            ingredient = await self.ingredient_repo.get_by_id(ing.ingredient_id)
+            ing.ingredient_name = ingredient.name if ingredient else "Unknown"
+
         return recipe

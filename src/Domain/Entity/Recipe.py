@@ -8,6 +8,7 @@ from src.Domain.ValueObject.IngredientQuantity import IngredientQuantity
 class RecipeIngredient:
     ingredient_id: UUID
     quantity: IngredientQuantity
+    ingredient_name: str = ""
 
 
 @dataclass

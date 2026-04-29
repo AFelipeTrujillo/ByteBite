@@ -1,11 +1,13 @@
 from uuid import UUID
 from src.Domain.Entity.Recipe import Recipe
 from src.Domain.Repository.RecipeRepository import RecipeRepository
+from src.Domain.Repository.IngredientRepository import IngredientRepository
 
 
 class GetRecipeByIdUseCase:
-    def __init__(self, recipe_repo: RecipeRepository):
+    def __init__(self, recipe_repo: RecipeRepository, ingredient_repo: IngredientRepository):
         self.recipe_repo = recipe_repo
+        self.ingredient_repo = ingredient_repo
 
     async def execute(self, recipe_id: UUID, user_id: UUID) -> Recipe:
         recipe = await self.recipe_repo.get_by_id(recipe_id)
@@ -16,5 +18,10 @@ class GetRecipeByIdUseCase:
         # Only owner or invited users can view
         if recipe.owner_id != user_id and user_id not in recipe.invited_users:
             raise PermissionError("You do not have access to this recipe")
+
+        # Resolve ingredient names
+        for ing in recipe.ingredients:
+            ingredient = await self.ingredient_repo.get_by_id(ing.ingredient_id)
+            ing.ingredient_name = ingredient.name if ingredient else "Unknown"
 
         return recipe

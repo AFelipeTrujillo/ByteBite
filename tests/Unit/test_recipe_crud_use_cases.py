@@ -7,12 +7,19 @@ from src.Application.UseCase.GetRecipeByIdUseCase import GetRecipeByIdUseCase
 from src.Application.UseCase.UpdateRecipeUseCase import UpdateRecipeUseCase
 from src.Application.UseCase.DeleteRecipeUseCase import DeleteRecipeUseCase
 from src.Domain.Entity.Recipe import Recipe, RecipeIngredient
+from src.Domain.Entity.Ingredient import Ingredient
 from src.Domain.ValueObject.IngredientQuantity import IngredientQuantity
 from src.Domain.ValueObject.Unit import Unit
+from src.Domain.ValueObject.Category import Category
 
 
 @pytest.fixture
 def mock_recipe_repo():
+    return MagicMock()
+
+
+@pytest.fixture
+def mock_ingredient_repo():
     return MagicMock()
 
 
@@ -35,14 +42,24 @@ def sample_recipe(user_id=None):
     )
 
 
+@pytest.fixture
+def sample_ingredient():
+    return Ingredient(
+        id=uuid4(),
+        name="Test Ingredient",
+        category=Category.PANTRY,
+    )
+
+
 # --- CREATE ---
 
 
 @pytest.mark.asyncio
-async def test_create_recipe_success(mock_recipe_repo):
+async def test_create_recipe_success(mock_recipe_repo, mock_ingredient_repo, sample_ingredient):
     # Arrange
     mock_recipe_repo.save = AsyncMock()
-    use_case = CreateRecipeUseCase(mock_recipe_repo)
+    mock_ingredient_repo.get_by_id = AsyncMock(return_value=sample_ingredient)
+    use_case = CreateRecipeUseCase(mock_recipe_repo, mock_ingredient_repo)
     owner_id = uuid4()
     ingredient_id = uuid4()
 
@@ -67,14 +84,16 @@ async def test_create_recipe_success(mock_recipe_repo):
     assert len(recipe.ingredients) == 1
     assert recipe.ingredients[0].quantity.amount == 500
     assert recipe.ingredients[0].quantity.unit == Unit.GRAMS
+    assert recipe.ingredients[0].ingredient_name == "Test Ingredient"
     mock_recipe_repo.save.assert_called_once()
 
 
 @pytest.mark.asyncio
-async def test_create_recipe_without_references(mock_recipe_repo):
+async def test_create_recipe_without_references(mock_recipe_repo, mock_ingredient_repo, sample_ingredient):
     # Arrange
     mock_recipe_repo.save = AsyncMock()
-    use_case = CreateRecipeUseCase(mock_recipe_repo)
+    mock_ingredient_repo.get_by_id = AsyncMock(return_value=sample_ingredient)
+    use_case = CreateRecipeUseCase(mock_recipe_repo, mock_ingredient_repo)
     ingredient_id = uuid4()
 
     ingredients_data = [
@@ -100,10 +119,11 @@ async def test_create_recipe_without_references(mock_recipe_repo):
 
 
 @pytest.mark.asyncio
-async def test_get_recipe_by_id_success(mock_recipe_repo, sample_recipe):
+async def test_get_recipe_by_id_success(mock_recipe_repo, mock_ingredient_repo, sample_recipe, sample_ingredient):
     # Arrange
     mock_recipe_repo.get_by_id = AsyncMock(return_value=sample_recipe)
-    use_case = GetRecipeByIdUseCase(mock_recipe_repo)
+    mock_ingredient_repo.get_by_id = AsyncMock(return_value=sample_ingredient)
+    use_case = GetRecipeByIdUseCase(mock_recipe_repo, mock_ingredient_repo)
 
     # Act
     recipe = await use_case.execute(
@@ -114,14 +134,15 @@ async def test_get_recipe_by_id_success(mock_recipe_repo, sample_recipe):
     # Assert
     assert recipe.id == sample_recipe.id
     assert recipe.name == "Test Recipe"
+    assert recipe.ingredients[0].ingredient_name == "Test Ingredient"
     mock_recipe_repo.get_by_id.assert_called_once_with(sample_recipe.id)
 
 
 @pytest.mark.asyncio
-async def test_get_recipe_by_id_not_found(mock_recipe_repo):
+async def test_get_recipe_by_id_not_found(mock_recipe_repo, mock_ingredient_repo):
     # Arrange
     mock_recipe_repo.get_by_id = AsyncMock(return_value=None)
-    use_case = GetRecipeByIdUseCase(mock_recipe_repo)
+    use_case = GetRecipeByIdUseCase(mock_recipe_repo, mock_ingredient_repo)
 
     # Act & Assert
     with pytest.raises(ValueError, match="Recipe not found"):
@@ -129,10 +150,10 @@ async def test_get_recipe_by_id_not_found(mock_recipe_repo):
 
 
 @pytest.mark.asyncio
-async def test_get_recipe_by_id_forbidden(mock_recipe_repo, sample_recipe):
+async def test_get_recipe_by_id_forbidden(mock_recipe_repo, mock_ingredient_repo, sample_recipe):
     # Arrange
     mock_recipe_repo.get_by_id = AsyncMock(return_value=sample_recipe)
-    use_case = GetRecipeByIdUseCase(mock_recipe_repo)
+    use_case = GetRecipeByIdUseCase(mock_recipe_repo, mock_ingredient_repo)
     other_user_id = uuid4()
 
     # Act & Assert
@@ -147,11 +168,12 @@ async def test_get_recipe_by_id_forbidden(mock_recipe_repo, sample_recipe):
 
 
 @pytest.mark.asyncio
-async def test_update_recipe_success(mock_recipe_repo, sample_recipe):
+async def test_update_recipe_success(mock_recipe_repo, mock_ingredient_repo, sample_recipe, sample_ingredient):
     # Arrange
     mock_recipe_repo.get_by_id = AsyncMock(return_value=sample_recipe)
     mock_recipe_repo.update = AsyncMock()
-    use_case = UpdateRecipeUseCase(mock_recipe_repo)
+    mock_ingredient_repo.get_by_id = AsyncMock(return_value=sample_ingredient)
+    use_case = UpdateRecipeUseCase(mock_recipe_repo, mock_ingredient_repo)
 
     # Act
     updated = await use_case.execute(
@@ -163,14 +185,15 @@ async def test_update_recipe_success(mock_recipe_repo, sample_recipe):
     # Assert
     assert updated.name == "Updated Recipe Name"
     assert len(updated.ingredients) == 1  # unchanged
+    assert updated.ingredients[0].ingredient_name == "Test Ingredient"
     mock_recipe_repo.update.assert_called_once()
 
 
 @pytest.mark.asyncio
-async def test_update_recipe_not_found(mock_recipe_repo):
+async def test_update_recipe_not_found(mock_recipe_repo, mock_ingredient_repo):
     # Arrange
     mock_recipe_repo.get_by_id = AsyncMock(return_value=None)
-    use_case = UpdateRecipeUseCase(mock_recipe_repo)
+    use_case = UpdateRecipeUseCase(mock_recipe_repo, mock_ingredient_repo)
 
     # Act & Assert
     with pytest.raises(ValueError, match="Recipe not found"):
@@ -178,10 +201,10 @@ async def test_update_recipe_not_found(mock_recipe_repo):
 
 
 @pytest.mark.asyncio
-async def test_update_recipe_forbidden(mock_recipe_repo, sample_recipe):
+async def test_update_recipe_forbidden(mock_recipe_repo, mock_ingredient_repo, sample_recipe):
     # Arrange
     mock_recipe_repo.get_by_id = AsyncMock(return_value=sample_recipe)
-    use_case = UpdateRecipeUseCase(mock_recipe_repo)
+    use_case = UpdateRecipeUseCase(mock_recipe_repo, mock_ingredient_repo)
 
     # Act & Assert
     with pytest.raises(PermissionError, match="only update your own"):

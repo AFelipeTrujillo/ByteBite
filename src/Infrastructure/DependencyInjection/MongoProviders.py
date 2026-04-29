@@ -69,34 +69,11 @@ def get_meal_plan_by_id_use_case(
     return GetMealPlanByIdUseCase(repo)
 
 def get_get_recipes_use_case():
-    repository = MongoRecipeRepository(db_client.get_collection("recipes"))
-    return GetRecipesUseCase(repository)
+    recipe_repo = MongoRecipeRepository(db_client.get_collection("recipes"))
+    ingredient_repo = MongoIngredientRepository(db_client.get_collection("ingredients"))
+    return GetRecipesUseCase(recipe_repo, ingredient_repo)
 
-def get_recipe_repository() -> MongoRecipeRepository:
-    return MongoRecipeRepository(db_client.get_collection("recipes"))
-
-def get_create_recipe_use_case(
-    repo: MongoRecipeRepository = Depends(get_recipe_repository)
-) -> CreateRecipeUseCase:
-    return CreateRecipeUseCase(repo)
-
-def get_get_recipe_by_id_use_case(
-    repo: MongoRecipeRepository = Depends(get_recipe_repository)
-) -> GetRecipeByIdUseCase:
-    return GetRecipeByIdUseCase(repo)
-
-def get_update_recipe_use_case(
-    repo: MongoRecipeRepository = Depends(get_recipe_repository)
-) -> UpdateRecipeUseCase:
-    return UpdateRecipeUseCase(repo)
-
-def get_delete_recipe_use_case(
-    repo: MongoRecipeRepository = Depends(get_recipe_repository)
-) -> DeleteRecipeUseCase:
-    return DeleteRecipeUseCase(repo)
-
-# --- Ingredient Providers ---
-
+# --- Ingredient Providers (defined before recipe providers that depend on them) ---
 def get_ingredient_repository() -> MongoIngredientRepository:
     return MongoIngredientRepository(db_client.get_collection("ingredients"))
 
@@ -124,4 +101,32 @@ def get_delete_ingredient_use_case(
     repo: MongoIngredientRepository = Depends(get_ingredient_repository)
 ) -> DeleteIngredientUseCase:
     return DeleteIngredientUseCase(repo)
+
+# --- Recipe Providers ---
+
+def get_recipe_repository() -> MongoRecipeRepository:
+    return MongoRecipeRepository(db_client.get_collection("recipes"))
+
+def get_create_recipe_use_case(
+    recipe_repo: MongoRecipeRepository = Depends(get_recipe_repository),
+    ingredient_repo: MongoIngredientRepository = Depends(get_ingredient_repository),
+) -> CreateRecipeUseCase:
+    return CreateRecipeUseCase(recipe_repo, ingredient_repo)
+
+def get_get_recipe_by_id_use_case(
+    recipe_repo: MongoRecipeRepository = Depends(get_recipe_repository),
+    ingredient_repo: MongoIngredientRepository = Depends(get_ingredient_repository),
+) -> GetRecipeByIdUseCase:
+    return GetRecipeByIdUseCase(recipe_repo, ingredient_repo)
+
+def get_update_recipe_use_case(
+    recipe_repo: MongoRecipeRepository = Depends(get_recipe_repository),
+    ingredient_repo: MongoIngredientRepository = Depends(get_ingredient_repository),
+) -> UpdateRecipeUseCase:
+    return UpdateRecipeUseCase(recipe_repo, ingredient_repo)
+
+def get_delete_recipe_use_case(
+    repo: MongoRecipeRepository = Depends(get_recipe_repository)
+) -> DeleteRecipeUseCase:
+    return DeleteRecipeUseCase(repo)
 
