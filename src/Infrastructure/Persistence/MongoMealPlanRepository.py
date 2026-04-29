@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 from motor.motor_asyncio import AsyncIOMotorCollection
 
@@ -18,7 +18,15 @@ class MongoMealPlanRepository(MealPlanRepository):
 
         return self._map_to_entity(doc)
 
+    async def find_by_owner(self, owner_id: UUID) -> List[MealPlan]:
+        cursor = self.collection.find(
+            {"owner_id": str(owner_id)}
+        ).sort([("year", -1), ("week_number", -1)])
 
+        meal_plans = []
+        async for doc in cursor:
+            meal_plans.append(self._map_to_entity(doc))
+        return meal_plans
 
     async def save(self, meal_plan: MealPlan) -> None:
         document = self._map_to_document(meal_plan)
@@ -27,7 +35,6 @@ class MongoMealPlanRepository(MealPlanRepository):
             document,
             upsert=True
         )
-
 
     def _map_to_entity(self, doc):
         days_dict = {}
@@ -61,4 +68,3 @@ class MongoMealPlanRepository(MealPlanRepository):
             "week_number": meal_plan.week_number,
             "days": days_to_store
         }
-

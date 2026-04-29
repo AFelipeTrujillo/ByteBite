@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List
 
 from src.Domain.Entity.MealPlan import MealPlan
 
@@ -9,6 +9,10 @@ class MealPlanRepository(ABC):
 
     @abstractmethod
     async def get_by_id(self, meal_plan_id: UUID) -> Optional[MealPlan]:
+        pass
+
+    @abstractmethod
+    async def find_by_owner(self, owner_id: UUID) -> List[MealPlan]:
         pass
 
     @abstractmethod

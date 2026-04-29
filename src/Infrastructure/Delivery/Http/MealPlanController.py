@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, status
 from uuid import UUID
+from typing import List
 from src.Application.UseCase.CreateMealPlan import CreateMealPlan
-from src.Infrastructure.Delivery.Http.Schemas.MealPlanSchema import CreateMealPlanRequest
-from src.Infrastructure.DependencyInjection.MongoProviders import get_create_meal_plan_use_case
+from src.Application.UseCase.ListMealPlansUseCase import ListMealPlansUseCase
+from src.Infrastructure.Delivery.Http.Schemas.MealPlanSchema import CreateMealPlanRequest, MealPlanResponse, DailyPlanResponse
+from src.Infrastructure.DependencyInjection.MongoProviders import get_create_meal_plan_use_case, get_list_meal_plans_use_case
 from src.Infrastructure.Security.AuthService import get_current_user_id
 
 router = APIRouter()
@@ -23,3 +25,28 @@ async def create_meal_plan(
     )
 
     return {"id": plan_id, "status": "created"}
+
+
+@router.get("/meal-plans/", response_model=List[MealPlanResponse])
+async def list_meal_plans(
+        current_user_id: UUID = Depends(get_current_user_id),
+        use_case: ListMealPlansUseCase = Depends(get_list_meal_plans_use_case)
+):
+    meal_plans = await use_case.execute(owner_id=current_user_id)
+    return [
+        MealPlanResponse(
+            id=mp.id,
+            owner_id=mp.owner_id,
+            year=mp.year,
+            week_number=mp.week_number,
+            days={
+                day_index: DailyPlanResponse(
+                    lunch_recipe_id=plan.lunch_recipe_id,
+                    dinner_recipe_id=plan.dinner_recipe_id,
+                )
+                for day_index, plan in mp.days.items()
+            },
+        )
+        for mp in meal_plans
+    ]
+

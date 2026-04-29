@@ -1,6 +1,7 @@
 from fastapi.params import Depends
 
 from src.Application.UseCase.CreateMealPlan import CreateMealPlan
+from src.Application.UseCase.ListMealPlansUseCase import ListMealPlansUseCase
 from src.Application.UseCase.LoginUseCase import LoginUseCase
 from src.Application.UseCase.RegisterUseCase import RegisterUseCase
 from src.Application.UseCase.CreateRecipeUseCase import CreateRecipeUseCase
@@ -55,6 +56,11 @@ def get_create_meal_plan_use_case(
     repo: MongoMealPlanRepository = Depends(get_meal_plan_repository)
 ) -> CreateMealPlan:
     return CreateMealPlan(repo)
+
+def get_list_meal_plans_use_case(
+    repo: MongoMealPlanRepository = Depends(get_meal_plan_repository)
+) -> ListMealPlansUseCase:
+    return ListMealPlansUseCase(repo)
 
 def get_get_recipes_use_case():
     repository = MongoRecipeRepository(db_client.get_collection("recipes"))

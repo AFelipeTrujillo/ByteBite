@@ -59,11 +59,27 @@
 
 ---
 
-## US-004: Get Meal Plan by ID
+## US-004: List Meal Plans
+
+**As a** logged-in user,  
+**I want** to list all my weekly meal plans,  
+**So that** I can see my planned weeks in a calendar view and navigate between them.
+
+### Acceptance Criteria
+
+- `GET /api/v1/meal-plans/` — List all meal plans owned by the current user.
+- The response is a list of meal plans, each including: `id`, `owner_id`, `year`, `week_number`, and `days` with `lunch_recipe_id` and `dinner_recipe_id`.
+- Results are sorted by year and week_number in descending order (most recent first).
+- Requires authentication.
+- If the user has no meal plans, return an empty list `[]`.
+
+---
+
+## US-005: Get Meal Plan by ID
 
 **As a** logged-in user,  
 **I want** to view a specific meal plan by its ID,  
-**So that** I can review what I planned for a given week.
+**So that** I can review the details of a particular week.
 
 ### Acceptance Criteria
 
@@ -76,7 +92,7 @@
 
 ---
 
-## US-005: Improved Shopping List Generation
+## US-006: Improved Shopping List Generation
 
 **As a** logged-in user,  
 **I want** the shopping list to be grouped by ingredient category and sorted,  
@@ -112,6 +128,5 @@
 ## Future Considerations (Out of Scope for Now)
 
 - Sharing recipes with other users (`invited_users` feature).
-- Weekly meal plan listing (list all plans for a user).
 - Ingredient exclusion (mark ingredients you already have at home).
 - Recipe search/filtering by name or ingredient.
