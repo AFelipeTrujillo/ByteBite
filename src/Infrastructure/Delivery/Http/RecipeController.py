@@ -64,7 +64,7 @@ async def create_recipe(
         recipe = await use_case.execute(
             owner_id=current_user.id,
             name=request.name,
-            ingredients=[item.model_dump() for item in request.ingredients],
+            ingredients=[item.model_dump(mode='json') for item in request.ingredients],
             references=request.references,
         )
         return recipe
@@ -84,7 +84,7 @@ async def update_recipe(
 ):
     try:
         ingredients_data = (
-            [item.model_dump() for item in request.ingredients]
+            [item.model_dump(mode='json') for item in request.ingredients]
             if request.ingredients is not None
             else None
         )
@@ -131,3 +131,4 @@ async def delete_recipe(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=str(e),
         )
+
